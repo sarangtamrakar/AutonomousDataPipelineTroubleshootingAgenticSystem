@@ -1,0 +1,37 @@
+For Your Local Project
+
+I'd recommend:
+Phase 1
+Kafka
+Airflow
+Spark
+Postgres
+Qdrant
+LangGraph
+Gemini
+
+No OpenSearch.
+
+Build the whole agent workflow.
+
+Phase 2
+Add:
+OpenSearch
+for:
+Spark logs
+Airflow logs
+Error searching
+
+
+Now you can say:
+Qdrant powers semantic incident retrieval, while OpenSearch indexes operational logs for fast keyword and structured search.
+
+That's a very strong architecture discussion.
+
+If an interviewer asks "Why Qdrant over OpenSearch?"
+
+A good answer is:
+
+OpenSearch is excellent for log analytics and keyword search, but my primary requirement was semantic retrieval of historical incidents and runbooks. Since the Incident Memory layer is fundamentally a vector-search problem, I chose Qdrant because it is purpose-built for embeddings, simpler to operate locally, and more resource-efficient. If I needed large-scale log analytics, I would complement Qdrant with OpenSearch rather than replace it.
+
+That answer sounds like a senior engineer making a design tradeoff rather than choosing tools based on popularity.

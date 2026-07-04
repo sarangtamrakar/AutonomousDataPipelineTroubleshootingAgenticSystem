@@ -1,0 +1,13 @@
+.env
+debug_tools.py
+INTERVIEW_QUICK_REFERENCE.md
+PROJECT_REPORT.md
+docker-compose.yml
+
+docker-compose.agent.yml
+rough.py
+
+
+# add all pycache recursive folders to gitignore
+**/__pycache__/
+rca_agent_workflow/mcp_server.py

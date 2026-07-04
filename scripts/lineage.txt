@@ -1,0 +1,64 @@
+-- ==============================================================================
+-- 1. NODES TABLE (The Data Assets)
+-- ==============================================================================
+CREATE TABLE data_assets (
+    asset_id VARCHAR(255) PRIMARY KEY,       -- e.g., 'catalog.schema.table'
+    asset_name VARCHAR(255) NOT NULL,        -- e.g., 'bronze_sales'
+    asset_type VARCHAR(50) NOT NULL,         -- 'table', 'view', 'dashboard', 'ml_model'
+    status VARCHAR(50) DEFAULT 'SUCCESS',    -- 'SUCCESS', 'FAILED', 'RUNNING', 'STALE'
+    last_updated_at TIMESTAMP,
+    owner_email VARCHAR(255)                 -- Who to page if it breaks
+);
+
+-- ==============================================================================
+-- 2. EDGES TABLE (The Lineage Connections)
+-- ==============================================================================
+CREATE TABLE data_lineage (
+    upstream_asset_id VARCHAR(255) REFERENCES data_assets(asset_id),
+    downstream_asset_id VARCHAR(255) REFERENCES data_assets(asset_id),
+    PRIMARY KEY (upstream_asset_id, downstream_asset_id)
+);
+
+-- ==============================================================================
+-- 3. MOCK DATA (Simulating your pipeline)
+-- =============================================================================
+
+-- ==============================================================================
+-- 1. ASSETS (9 Explicit Tables)
+-- ==============================================================================
+INSERT INTO data_assets (asset_id, asset_name, asset_type) VALUES
+-- Customers Track
+('urn:bronze:customers', 'bronze_customers', 'table'),
+('urn:silver:customers', 'silver_customers', 'table'),
+('urn:gold:dim_customers', 'gold_dim_customers', 'table'),
+
+-- Products Track
+('urn:bronze:products', 'bronze_products', 'table'),
+('urn:silver:products', 'silver_products', 'table'),
+('urn:gold:dim_products', 'gold_dim_products', 'table'),
+
+-- Sales Track
+('urn:bronze:sales', 'bronze_sales', 'table'),
+('urn:silver:sales', 'silver_sales', 'table'),
+('urn:gold:fact_sales', 'gold_fact_sales', 'table');
+
+-- ==============================================================================
+-- 2. EDGES (The Vertical Data Flow)
+-- ==============================================================================
+INSERT INTO data_lineage (upstream_asset_id, downstream_asset_id) VALUES
+-- Vertical Tracks (Bronze -> Silver)
+('urn:bronze:customers', 'urn:silver:customers'),
+('urn:bronze:products', 'urn:silver:products'),
+('urn:bronze:sales', 'urn:silver:sales'),
+
+-- Vertical Tracks (Silver -> Gold Dims)
+('urn:silver:customers', 'urn:gold:dim_customers'),
+('urn:silver:products', 'urn:gold:dim_products'),
+
+-- The Fact Table Fan-In (Silver Sales + Gold Dims -> Fact Sales)
+-- Fact tables usually need the dimension tables to be finished first to grab Surrogate Keys
+('urn:silver:sales', 'urn:gold:fact_sales'),
+('urn:gold:dim_customers', 'urn:gold:fact_sales'),
+('urn:gold:dim_products', 'urn:gold:fact_sales');
+
+select * from data_assets;
